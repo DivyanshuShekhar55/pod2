@@ -12,10 +12,13 @@ import {
 import { FlashList } from '@shopify/flash-list';
 import EventCard from '../../../components/EventCard';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
-const App = () => {
+const EventsScreen = () => {
+  const router = useRouter()
+
   const [searchText, setSearchText] = useState('');
 
   const upcomingEvents = [
@@ -53,7 +56,7 @@ const App = () => {
   };
 
   const handleAddEvent = () => {
-    console.log('Add event pressed');
+    router.push('./AddScreen')
   };
 
   return (
@@ -90,7 +93,7 @@ const App = () => {
         ListFooterComponent={
           <>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Upcoming</Text>
+              <Text style={styles.sectionTitle}>Past Events</Text>
             </View>
             <View style={styles.bottomSpacing} />
           </>
@@ -225,4 +228,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default EventsScreen;
