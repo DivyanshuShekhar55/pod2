@@ -12,18 +12,20 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
 const AddEventScreen = ({ navigation }) => {
+    const router = useRouter()
+
   const [eventData, setEventData] = useState({
     title: '',
     description: '',
     date: '',
     time: '',
     location: '',
-    organizer: '',
-    category: '',
+    backgroundColor: '#FF8A65', // Default color
   });
 
   const [focusedField, setFocusedField] = useState(null);
@@ -51,8 +53,19 @@ const AddEventScreen = ({ navigation }) => {
   };
 
   const handleGoBack = () => {
-    // navigation.goBack();
-    console.log('Going back');
+    router.back()
+  };
+
+  const handleDatePress = () => {
+    // Open date picker/calendar
+    Alert.alert('Date Picker', 'Calendar would open here');
+    // You can integrate with a date picker library like react-native-date-picker
+  };
+
+  const handleLocationPress = () => {
+    // Open map
+    Alert.alert('Map', 'Map would open here');
+    // You can integrate with react-native-maps or open external map
   };
 
   const renderInputField = (
@@ -60,16 +73,22 @@ const AddEventScreen = ({ navigation }) => {
     field,
     placeholder,
     icon,
-    multiline = false,
-    keyboardType = 'default'
+    multiline = true,
+    keyboardType = 'default',
+    onPress = null
   ) => {
     const isFocused = focusedField === field;
     
     return (
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>{label}</Text>
-        <View style={[styles.inputWrapper, isFocused && styles.inputWrapperFocused]}>
-          <Ionicons name={icon} size={20} color={isFocused ? '#8B5CF6' : '#9CA3AF'} />
+        <TouchableOpacity 
+          style={[styles.inputWrapper]}
+          onPress={onPress}
+          disabled={!onPress}
+          activeOpacity={onPress ? 0.7 : 1}
+        >
+          {/* <Ionicons name={icon} size={20} color={isFocused ? '#8B5CF6' : '#9CA3AF'} /> */}
           <TextInput
             style={[styles.textInput, multiline && styles.textInputMultiline]}
             placeholder={placeholder}
@@ -81,13 +100,21 @@ const AddEventScreen = ({ navigation }) => {
             multiline={multiline}
             numberOfLines={multiline ? 3 : 1}
             keyboardType={keyboardType}
+            editable={!onPress}
           />
-        </View>
+        </TouchableOpacity>
       </View>
     );
   };
 
-  const categories = ['Festival', 'Concert', 'Workshop', 'Sports', 'Conference', 'Party'];
+  const backgroundColors = [
+    '#FF8A65', // Orange
+    '#8B5CF6', // Purple
+    '#10B981', // Green
+    '#F59E0B', // Amber
+    '#EF4444', // Red
+    '#3B82F6', // Blue
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -105,8 +132,9 @@ const AddEventScreen = ({ navigation }) => {
       {/* Content */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.formContainer}>
+          
           {/* Event Title */}
-          {renderInputField('Event Title *', 'title', 'Enter event title', 'calendar-outline')}
+          {renderInputField('Event Title', 'title', 'Enter event title', 'calendar-outline', false)}
 
           {/* Event Description */}
           {renderInputField(
@@ -120,48 +148,41 @@ const AddEventScreen = ({ navigation }) => {
           {/* Date and Time Row */}
           <View style={styles.rowContainer}>
             <View style={styles.halfInput}>
-              {renderInputField('Date *', 'date', 'DD/MM/YYYY', 'calendar')}
+              {renderInputField('Date', 'date', 'Select date', 'calendar', false, 'default', handleDatePress)}
             </View>
             <View style={styles.halfInput}>
-              {renderInputField('Time *', 'time', 'HH:MM', 'time-outline')}
+              {renderInputField('Time', 'time', 'Select time', 'time-outline', false)}
             </View>
           </View>
 
           {/* Location */}
           {renderInputField(
-            'Location *',
+            'Location',
             'location',
-            'Enter event location',
-            'location-outline'
+            'Choose location',
+            'location-outline',
+            false,
+            'default',
+            handleLocationPress
           )}
 
-          {/* Organizer */}
-          {renderInputField(
-            'Organizer',
-            'organizer',
-            'Your name or organization',
-            'person-outline'
-          )}
-
-          {/* Category Selection */}
+          {/* Background Color Selection */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Category</Text>
-            <View style={styles.categoryContainer}>
-              {categories.map((category) => (
+            <Text style={styles.inputLabel}>Event Color</Text>
+            <View style={styles.colorContainer}>
+              {backgroundColors.map((color, index) => (
                 <TouchableOpacity
-                  key={category}
+                  key={index}
                   style={[
-                    styles.categoryChip,
-                    eventData.category === category && styles.categoryChipSelected
+                    styles.colorChip,
+                    { backgroundColor: color },
+                    eventData.backgroundColor === color && styles.colorChipSelected
                   ]}
-                  onPress={() => handleInputChange('category', category)}
+                  onPress={() => handleInputChange('backgroundColor', color)}
                 >
-                  <Text style={[
-                    styles.categoryText,
-                    eventData.category === category && styles.categoryTextSelected
-                  ]}>
-                    {category}
-                  </Text>
+                  {eventData.backgroundColor === color && (
+                    <Ionicons name="checkmark" size={16} color="#FFF" />
+                  )}
                 </TouchableOpacity>
               ))}
             </View>
@@ -177,12 +198,6 @@ const AddEventScreen = ({ navigation }) => {
         <Text style={styles.floatingButtonText}>Add Event</Text>
       </TouchableOpacity>
 
-      {/* Decorative Background Elements */}
-      <View style={styles.backgroundDecoration}>
-        <View style={[styles.decorativeBubble, styles.bubble1]} />
-        <View style={[styles.decorativeBubble, styles.bubble2]} />
-        <View style={[styles.decorativeBubble, styles.bubble3]} />
-      </View>
     </SafeAreaView>
   );
 };
@@ -230,88 +245,69 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   inputLabel: {
     fontSize: 16,
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 8,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
   },
   inputWrapperFocused: {
-    borderColor: '#8B5CF6',
-    shadowColor: '#8B5CF6',
-    shadowOpacity: 0.1,
+    borderBottomColor: '#8B5CF6',
   },
   textInput: {
     flex: 1,
     fontSize: 16,
     color: '#374151',
-    marginLeft: 12,
-    minHeight: 20,
+    //marginLeft: 12,
+    minHeight: 16,
+    textAlignVertical: 'bottom',
+    
   },
   textInputMultiline: {
     minHeight: 60,
-    textAlignVertical: 'top',
+    textAlignVertical: 'bottom',
   },
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: 20,
   },
   halfInput: {
     flex: 1,
   },
-  categoryContainer: {
+  colorContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 12,
+    backgroundColor:"transparent",
   },
-  categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+  colorChip: {
+    width: 40,
+    height: 40,
     borderRadius: 20,
-    backgroundColor: '#FFF',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    justifyContent: 'center',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 2,
     },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  categoryChipSelected: {
-    backgroundColor: '#8B5CF6',
-    borderColor: '#8B5CF6',
-  },
-  categoryText: {
-    fontSize: 14,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  categoryTextSelected: {
-    color: '#FFF',
+  colorChipSelected: {
+    borderWidth: 3,
+    borderColor: '#FFF',
   },
   bottomSpacing: {
     height: 100,
@@ -354,27 +350,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     opacity: 0.1,
   },
-  bubble1: {
-    width: 150,
-    height: 150,
-    backgroundColor: '#8B5CF6',
-    top: -30,
-    right: -30,
-  },
-  bubble2: {
-    width: 120,
-    height: 120,
-    backgroundColor: '#F59E0B',
-    bottom: 200,
-    left: -40,
-  },
-  bubble3: {
-    width: 80,
-    height: 80,
-    backgroundColor: '#10B981',
-    top: '60%',
-    right: -20,
-  },
+
 });
 
 export default AddEventScreen;
