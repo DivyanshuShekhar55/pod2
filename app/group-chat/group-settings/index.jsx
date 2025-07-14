@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    fontFamily: 'Inter',
   },
   header: {
     flexDirection: 'row',
@@ -185,6 +186,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#000',
+    fontFamily:'Inter'
   },
   moreButton: {
     padding: 8,
