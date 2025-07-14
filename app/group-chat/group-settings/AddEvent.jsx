@@ -4,12 +4,12 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
   StatusBar,
   Dimensions,
   SafeAreaView,
 } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import EventCard from '../../../components/EventCard';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -59,7 +59,7 @@ const App = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
-      
+
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
@@ -74,57 +74,44 @@ const App = () => {
         </View>
       </View>
 
-      {/* Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Live Event Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Live Events</Text>
-        </View>
+      {/* FlashList */}
+      <FlashList
+        data={upcomingEvents}
+        estimatedItemSize={150}
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Live Events</Text>
+            </View>
+          </>
+        }
+        ListFooterComponent={
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Upcoming</Text>
+            </View>
+            <View style={styles.bottomSpacing} />
+          </>
+        }
+        renderItem={({ item }) => (
+          <EventCard
+            title={item.title}
+            date={item.date}
+            time={item.time}
+            location={item.location}
+            description={item.description}
+            cardColor={item.cardColor}
+            onPress={() => handleEventPress(item)}
+          />
+        )}
+      />
 
-        {/* Event Cards */}
-        <View style={styles.eventsContainer}>
-          {upcomingEvents.map((event) => (
-            <EventCard
-              key={event.id}
-              title={event.title}
-              date={event.date}
-              time={event.time}
-              location={event.location}
-              description={event.description}
-              cardColor={event.cardColor}
-              onPress={() => handleEventPress(event)}
-            />
-          ))}
-        </View>
-
-        {/* Upcoming Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Upcoming</Text>
-        </View>
-
-        {/* Add some spacing at the bottom */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.addButton} onPress={handleAddEvent}>
-          <Text style={styles.addButtonText}>+</Text>
-          <Text style={styles.addButtonLabel}>Add Event</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>📅</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>👥</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>⚙️</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Floating Add Button */}
+      <TouchableOpacity style={styles.floatingAddButton} onPress={handleAddEvent}>
+        <Text style={styles.floatingAddText}>+</Text>
+      </TouchableOpacity>
 
       {/* Decorative Background Elements */}
       <View style={styles.backgroundDecoration}>
@@ -142,7 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   searchContainer: {
-    paddingTop:16,
+    paddingTop: 16,
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
@@ -154,10 +141,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 4,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
@@ -171,9 +155,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#374151',
   },
-  content: {
-    flex: 1,
-  },
   sectionHeader: {
     paddingHorizontal: 20,
     paddingVertical: 16,
@@ -183,56 +164,29 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1F2937',
   },
-  eventsContainer: {
-    paddingBottom: 20,
-  },
   bottomSpacing: {
     height: 100,
   },
-  bottomNav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: '#FFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  floatingAddButton: {
+    position: 'absolute',
+    bottom: 30,
+    left: width / 2 - 30,
+    width: 60,
+    height: 60,
     backgroundColor: '#FF8A65',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 25,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#FF8A65',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
   },
-  addButtonText: {
-    fontSize: 20,
+  floatingAddText: {
+    fontSize: 30,
     color: '#FFF',
     fontWeight: 'bold',
-    marginRight: 8,
-  },
-  addButtonLabel: {
-    fontSize: 16,
-    color: '#FFF',
-    fontWeight: '600',
-  },
-  navItem: {
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: '#F3F4F6',
-  },
-  navIcon: {
-    fontSize: 20,
   },
   backgroundDecoration: {
     position: 'absolute',
