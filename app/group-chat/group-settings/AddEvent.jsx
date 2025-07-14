@@ -23,8 +23,8 @@ const App = () => {
       id: 1,
       title: 'Festival Dance',
       description: 'Jorou william',
-      time: '18.2 km',
-      location: 'Kadupugur, Sukabumi',
+      time: '6:00PM',
+      location: 'Kadupugur, Sukabumi, India, World < milky way da da dum',
       date: { day: '22', month: 'July' },
       cardColor: '#8B5CF6',
     },
@@ -36,6 +36,15 @@ const App = () => {
       location: 'City Central',
       date: { day: '15', month: 'Aug' },
       cardColor: '#F59E0B',
+    },
+    {
+      id: 3,
+      title: 'Music Concert',
+      description: 'Band Performance',
+      time: '19:00 PM',
+      location: 'City Central',
+      date: { day: '15', month: 'Aug' },
+      cardColor: '#EA48C9',
     },
   ];
 
@@ -69,7 +78,7 @@ const App = () => {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Live Event Section */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Live Event</Text>
+          <Text style={styles.sectionTitle}>Live Events</Text>
         </View>
 
         {/* Event Cards */}

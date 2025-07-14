@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 
@@ -13,7 +14,7 @@ const EventCard = ({
     cardColor = '#8B5CF6' // Default purple color
 }) => {
     return (
-        <TouchableOpacity style={[styles.card, { backgroundColor: cardColor }]} onPress={onPress}>
+        <TouchableOpacity style={[styles.card, { backgroundColor: cardColor }]} onPress={onPress} activeOpacity={1}>
             <View style={styles.cardHeader}>
                 <View style={styles.dateContainer}>
                     <Text style={styles.dateDay}>{date.day}</Text>
@@ -24,11 +25,22 @@ const EventCard = ({
 
             <View style={styles.cardContent}>
                 <Text style={styles.eventTitle}>{title}</Text>
-                <Text style={styles.eventDesc}>By {description}</Text>
+                <Text style={styles.eventDesc}> {description}</Text>
 
                 <View style={styles.eventDetails}>
                     <Text style={styles.eventTime}>{time}</Text>
-                    <Text style={styles.eventLocation}>{location}</Text>
+
+                    <View style={styles.eventLocationContainer}>
+
+                        <Text style={styles.eventLocation} numberOfLines={1}>{location}</Text>
+
+                        <TouchableOpacity>
+                            <View style={styles.eventLocationIcon} activeOpacity={0.7}>
+                                <Ionicons name='location-outline' size={16} color="#fff" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
                 </View>
 
             </View>
@@ -102,7 +114,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     eventDetails: {
-        marginBottom: 20,
+        marginBottom: 4,
     },
     eventTime: {
         fontSize: 16,
@@ -110,9 +122,21 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginBottom: 4,
     },
+    eventLocationContainer:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        padding: 8,
+        borderRadius: 8,
+    },
     eventLocation: {
         fontSize: 14,
         color: 'rgba(255, 255, 255, 0.8)',
+        flex:0.9
+    },
+    eventLocationIcon:{
+        flex:0.1
     },
     decorativeElements: {
         position: 'absolute',
