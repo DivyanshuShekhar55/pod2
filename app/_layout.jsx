@@ -1,23 +1,32 @@
 import { Ionicons } from "@expo/vector-icons";
-import { BottomTabBar } from "@react-navigation/bottom-tabs";
-import { Stack, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 
 export default function RootLayout() {
   return <Tabs screenOptions={{
-      headerShown: false
-    }}
-    >;
+    headerShown: false
+  }}
+  >;
 
     <Tabs.Screen
-    name="SearchGroups"
+      name="SearchGroups"
+      options={{
+        title: 'Search',
+        tabBarIcon: ({ color }) => (
+          <Ionicons name="search-sharp" size={24} color={color} />
+        )
+      }}
+    />
+
+    <Tabs.Screen
+    name="index"
     options={{
-      title:'Search',
-      tabBarIcon:({color})=>(
-        <Ionicons name="search-sharp" size={24} color={color}/>
-      )
+      title: 'Index',
+        tabBarIcon: ({ color }) => (
+          <Ionicons name="search-sharp" size={24} color={color} />
+        )
     }}
     />
 
-</Tabs>;
+  </Tabs>;
 
 }
