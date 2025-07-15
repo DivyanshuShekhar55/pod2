@@ -90,13 +90,13 @@ const GenericAnimatedFlashList = ({
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      {backgroundImage && (
+      {/* {backgroundImage && (
         <Image 
           source={{ uri: backgroundImage }} 
           style={StyleSheet.absoluteFill} 
           blurRadius={blurRadius} 
         />
-      )}
+      )} */}
       <AnimatedFlashList
         onScroll={scrollHandler}
         data={data}
@@ -121,3 +121,5 @@ const GenericAnimatedFlashList = ({
     </View>
   );
 };
+
+export default GenericAnimatedFlashList;
