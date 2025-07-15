@@ -36,8 +36,8 @@ const CommunitySearchScreen = () => {
             name: "Sarah Johnson",
             role: "Member",
             distance: "350 m",
-            avatar: "https://images.unsplash.com/photo-1494790108755-2616b9e0a9ff?w=100&h=100&fit=crop&crop=face",
-            position: { bottom: 160, left: 80 },
+            avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+            position: { bottom: 100, left: 90 },
             circleRadius: 180
         },
         {
@@ -93,26 +93,26 @@ const CommunitySearchScreen = () => {
 
     const renderCommunityMember = (member) => (
         <View key={member.id} style={[styles.memberContainer, member.position]}>
-            {/* Static circle for member */}
+            {/* Static circle for member
             <View style={[styles.staticCircle, { 
                 width: member.circleRadius, 
                 height: member.circleRadius,
                 borderRadius: member.circleRadius / 2,
                 marginLeft: -member.circleRadius / 2,
                 marginTop: -member.circleRadius / 2,
-            }]} />
+            }]} /> */}
             <View style={styles.memberAvatar}>
                 <Image 
                     source={{ uri: member.avatar }} 
                     style={styles.avatarImage}
                 />
             </View>
-            {member.id === 1 && (
+            {/* {member.id === 1 && (
                 <View style={styles.memberInfo}>
                     <Text style={styles.memberName}>{member.name}</Text>
                     <Text style={styles.memberRole}>{member.role} • {member.distance}</Text>
                 </View>
-            )}
+            )} */}
         </View>
     );
 
@@ -121,13 +121,13 @@ const CommunitySearchScreen = () => {
             <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
             {/* Header */}
-            <View style={styles.header}>
+            {/* <View style={styles.header}>
                 <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
                     <Ionicons name="arrow-back" size={24} color="#1F2937" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Searching for Communities</Text>
                 <View style={styles.headerPlaceholder} />
-            </View>
+            </View> */}
 
             {/* Main Content */}
             <View style={styles.content}>
@@ -205,7 +205,7 @@ const CommunitySearchScreen = () => {
             {/* Cancel Button */}
             <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
                 <Ionicons name="close" size={20} color="#9CA3AF" />
-                <Text style={styles.cancelText}>Slide To Cancel</Text>
+                <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );
