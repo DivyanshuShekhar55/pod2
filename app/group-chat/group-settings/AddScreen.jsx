@@ -23,14 +23,14 @@ const AddEventScreen = ({ navigation }) => {
     const [eventData, setEventData] = useState({
         title: '',
         description: '',
-        date: '',
+        date: new Date(), // Initialize with current date
         time: '',
         location: '',
         backgroundColor: '#FF8A65', // Default color
     });
 
     const [focusedField, setFocusedField] = useState(null);
-    const [isCalenderChosen, setIsCalenderChosen] = useState(false)
+    const [isCalendarChosen, setIsCalendarChosen] = useState(false)
 
     const handleInputChange = (field, value) => {
         setEventData(prev => ({
@@ -59,15 +59,28 @@ const AddEventScreen = ({ navigation }) => {
     };
 
     const handleDatePress = () => {
-        // Open date picker/calendar
-        Alert.alert('Date Picker', 'Calendar would open here');
-        // You can integrate with a date picker library like react-native-date-picker
+        setIsCalendarChosen(!isCalendarChosen);
+    };
+
+    const handleDateChange = (event, selectedDate) => {
+        setIsCalendarChosen(false);
+        if (selectedDate) {
+            handleInputChange('date', selectedDate);
+        }
     };
 
     const handleLocationPress = () => {
         // Open map
         Alert.alert('Map', 'Map would open here');
         // You can integrate with react-native-maps or open external map
+    };
+
+    const formatDate = (date) => {
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
     };
 
     const renderInputField = (
@@ -150,12 +163,25 @@ const AddEventScreen = ({ navigation }) => {
                     {/* Date and Time Row */}
                     <View style={styles.rowContainer}>
                         <View style={styles.halfInput}>
-                            {/* {renderInputField('Date', 'date', 'Select date', 'calendar', false, 'default', handleDatePress)} */}
-                            <TouchableOpacity onPress={()=>setIsCalenderChosen(!isCalenderChosen)} onPressOut={()=>{setIsCalenderChosen(false)}}>
-                                <Ionicons name="calendar-outline" size={24} color="#9CA3AF" />
-                                {isCalenderChosen && (<RNDateTimePicker mode='date' value={new Date()} />)}
-
-                            </TouchableOpacity>
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Date</Text>
+                                <TouchableOpacity 
+                                    style={styles.dateContainer}
+                                    onPress={handleDatePress}
+                                >
+                                    <Ionicons name="calendar-outline" size={20} color="#9CA3AF" />
+                                    <Text style={styles.dateText}>
+                                        {formatDate(eventData.date)}
+                                    </Text>
+                                </TouchableOpacity>
+                                {isCalendarChosen && (
+                                    <RNDateTimePicker 
+                                        mode='date' 
+                                        value={eventData.date} 
+                                        onChange={handleDateChange}
+                                    />
+                                )}
+                            </View>
                         </View>
                         <View style={styles.halfInput}>
                             {renderInputField('Time', 'time', 'Select time', 'time-outline', false)}
@@ -283,6 +309,18 @@ const styles = StyleSheet.create({
         minHeight: 60,
         textAlignVertical: 'bottom',
     },
+    dateContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+    },
+    dateText: {
+        fontSize: 16,
+        color: '#374151',
+        marginLeft: 8,
+    },
     rowContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -296,6 +334,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         gap: 12,
         backgroundColor: "transparent",
+        marginTop: 8,
     },
     colorChip: {
         width: 40,
@@ -303,18 +342,18 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    colorChipSelected: {
+        borderWidth: 3,
+        borderColor: '#FFF',
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.2,
         shadowRadius: 4,
-        elevation: 2,
-    },
-    colorChipSelected: {
-        borderWidth: 3,
-        borderColor: '#FFF',
+        elevation: 4,
     },
     bottomSpacing: {
         height: 100,
