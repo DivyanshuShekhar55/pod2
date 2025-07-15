@@ -1,124 +1,123 @@
-import React from "react"
-import {
-  Image,
-  StyleSheet,
-  Platform,
-  View,
-  Text,
-  FlatList,
-  StatusBar,
-} from "react-native";
-import { faker } from "@faker-js/faker";
+
+import React from "react";
+import { View, StyleSheet, StatusBar, Image } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import Animated, {
-  useAnimatedRef,
-  useScrollViewOffset,
-  interpolate,
-  useAnimatedStyle,
   useAnimatedScrollHandler,
-  useSharedValue
+  useSharedValue,
+  useAnimatedStyle,
+  interpolate,
 } from 'react-native-reanimated';
 
-const AVATAR_SIZE = 70;
+const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
+
 const SPACING = 20;
-const ITEM_SIZE = AVATAR_SIZE + 3 * SPACING
 
-const BG_IMG = "https://images.pexels.com/photos/3147624/pexels-photo-3147624.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+const AnimatedListItem = ({ 
+  children, 
+  index, 
+  offset, 
+  itemSize, 
+  animationConfig = {}
+}) => {
+  const {
+    opacityRange = [1, 1, 1, 0],
+    scaleRange = [1, 1, 1, 0],
+    fadeOffset = 0.5,
+    scaleOffset = 2,
+    backgroundColor = 'rgba(255, 255, 255, 0.8)',
+    borderRadius = 18,
+    padding = SPACING,
+    marginBottom = SPACING,
+  } = animationConfig;
 
-faker.seed(10);
-const DATA = [...Array(30).keys()].map((_, i) => {
-  const gender = faker.person.sexType(); // Returns 'male' or 'female' every time
-  return {
-    key: faker.string.uuid(),
-    image: `https://randomuser.me/api/portraits/${gender === "male" ? "men" : "women"
-      }/${faker.number.int({ min: 0, max: 60 })}.jpg`,
-    name: faker.internet.username(),
-    jobTitle: faker.person.jobTitle(),
-    email: faker.internet.email(),
-  };
-});
-
-const ListItem = ({ item, index, offset }) => {
-
-  // const opacityInput = [-1, 0, ITEM_SIZE * index - ITEM_SIZE, ITEM_SIZE * index ]
   const opacityInput = [
-    -1, 0, ITEM_SIZE * index, ITEM_SIZE * (index + 0.5)
-  ]
+    -1, 0, itemSize * index, itemSize * (index + fadeOffset)
+  ];
 
   const scaleInput = [
-    -1, 0, ITEM_SIZE * index, ITEM_SIZE * (index + 2)
-  ]
+    -1, 0, itemSize * index, itemSize * (index + scaleOffset)
+  ];
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(offset.value, opacityInput, [1, 1, 1, 0], 'clamp'),
+    opacity: interpolate(offset.value, opacityInput, opacityRange, 'clamp'),
     transform: [
       {
-        scale: interpolate(offset.value, scaleInput, [1, 1, 1, 0], 'clamp')
+        scale: interpolate(offset.value, scaleInput, scaleRange, 'clamp')
       }
     ]
-
-  }))
+  }));
 
   return (
     <Animated.View
-      style={[{
-        display: "flex",
-        flexDirection: "row",
-        marginBottom: SPACING,
-        padding: SPACING,
-        borderRadius: 18,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)'
-      }, animatedStyle]}
+      style={[
+        {
+          flexDirection: "row",
+          marginBottom,
+          padding,
+          borderRadius,
+          backgroundColor,
+        },
+        animatedStyle
+      ]}
     >
-      <Image
-        source={{ uri: item.image }}
-        style={{
-          height: AVATAR_SIZE,
-          width: AVATAR_SIZE,
-          borderRadius: AVATAR_SIZE,
-          marginRight: SPACING / 2,
-        }}
-      />
-
-      <View>
-        <Text style={{ fontSize: 18, fontWeight: "700" }}>
-          {item.name}
-        </Text>
-        <Text style={{ fontSize: 12, opacity: 0.7 }}>
-          {" "}
-          {item.jobTitle}{" "}
-        </Text>
-        <Text style={{ fontSize: 12, opacity: 0.8, color: "#0099cc" }}>
-          {" "}
-          {item.email}{" "}
-        </Text>
-      </View>
+      {children}
     </Animated.View>
   );
-}
+};
 
-
-export default function HomeScreen() {
+const GenericAnimatedFlashList = ({
+  data,
+  renderItem,
+  keyExtractor,
+  itemSize,
+  backgroundImage,
+  blurRadius = 70,
+  animationConfig,
+  contentContainerStyle,
+  ...flashListProps
+}) => {
   const offsetY = useSharedValue(0);
+  
   const scrollHandler = useAnimatedScrollHandler((event) => {
     offsetY.value = event.contentOffset.y;
   });
 
+  const defaultContentContainerStyle = {
+    padding: SPACING,
+    paddingTop: StatusBar.currentHeight || 42,
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <Image source={{ uri: BG_IMG }} style={StyleSheet.absoluteFill} blurRadius={70} />
-      <Animated.FlatList
+      {backgroundImage && (
+        <Image 
+          source={{ uri: backgroundImage }} 
+          style={StyleSheet.absoluteFill} 
+          blurRadius={blurRadius} 
+        />
+      )}
+      <AnimatedFlashList
         onScroll={scrollHandler}
-        data={DATA}
-        keyExtractor={(item) => item.key}
-        contentContainerStyle={{ padding: SPACING, paddingTop: StatusBar.currentHeight || 42 }}
-        renderItem={({ item, index }) => {
-          return (
-            <ListItem item={item} index={index} offset={offsetY} />
-          )
+        data={data}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={{
+          ...defaultContentContainerStyle,
+          ...contentContainerStyle,
         }}
+        estimatedItemSize={itemSize}
+        renderItem={({ item, index }) => (
+          <AnimatedListItem
+            index={index}
+            offset={offsetY}
+            itemSize={itemSize}
+            animationConfig={animationConfig}
+          >
+            {renderItem({ item, index })}
+          </AnimatedListItem>
+        )}
+        {...flashListProps}
       />
     </View>
   );
-}
-
-const styles = StyleSheet.create({});
+};
