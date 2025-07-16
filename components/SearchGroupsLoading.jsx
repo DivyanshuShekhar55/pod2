@@ -16,7 +16,7 @@ import { useRouter } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
-const CommunitySearchScreen = () => {
+const SearchGroupLoadingComponent = () => {
     const router = useRouter();
     const [pulseAnim] = useState(new Animated.Value(0));
 
@@ -433,4 +433,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CommunitySearchScreen;
+export default SearchGroupLoadingComponent;
